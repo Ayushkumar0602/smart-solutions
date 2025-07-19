@@ -1,0 +1,678 @@
+<!-- I'll provide the complete login page implementation with Firebase Authentication. Here's the code:
+
+```html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Your App Name</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --danger-color: #f72585;
+            --success-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --white-color: #ffffff;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .login-page {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .login-left {
+            flex: 1;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .login-left::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .login-left h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-left p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 500px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background-color: var(--white-color);
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--white-color);
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+            padding: 40px;
+            position: relative;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo img {
+            height: 60px;
+        }
+
+        .login-logo h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 15px;
+        }
+
+        .login-form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .login-form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .login-form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+
+        .login-remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .login-remember-me input {
+            margin-right: 10px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 6px;
+            color: var(--white-color);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .login-btn-google {
+            background-color: var(--white-color);
+            color: var(--dark-color);
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-btn-google:hover {
+            background-color: #f5f5f5;
+        }
+
+        .login-btn-google i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            color: #db4437;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--gray-color);
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .login-divider span {
+            padding: 0 10px;
+        }
+
+        .login-forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .login-forgot-password a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .login-forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .login-signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--gray-color);
+        }
+
+        .login-signup-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .login-signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .login-error {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .login-back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-back-link:hover {
+            color: var(--primary-color);
+        }
+
+        .login-back-link i {
+            margin-right: 5px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+
+        .firebaseui-card-content {
+            padding: 0 !important;
+        }
+
+        .firebaseui-idp-list {
+            margin: 0 !important;
+        }
+
+        .firebaseui-idp-button {
+            max-width: 100% !important;
+            min-width: 100% !important;
+            margin-bottom: 15px !important;
+        }
+
+        .firebaseui-idp-text {
+            font-size: 1rem !important;
+        }
+
+        /* Responsive styles */
+        @media (min-width: 768px) {
+            .login-left {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .login-page {
+                padding: 20px;
+            }
+
+            .login-form-container {
+                padding: 30px 20px;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-left">
+            <h1>Welcome Back</h1>
+            <p>Login to access your dashboard and explore all the features we've prepared for you. We're glad to see you again!</p>
+            <div class="illustration">
+                <img src="https://cdn-icons-png.flaticon.com/512/3209/3209130.png" alt="Login Illustration" width="300">
+            </div>
+        </div>
+
+        <div class="login-right">
+            <a href="index.html" class="login-back-link">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+            
+            <div class="login-form-container">
+                <div class="login-logo">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6681/6681204.png" alt="App Logo">
+                    <h2>Login to Your Account</h2>
+                </div>
+
+                <form id="loginForm">
+                    <div class="login-form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="login-form-control" placeholder="Enter your email" required>
+                        <div id="emailError" class="login-error"></div>
+                    </div>
+
+                    <div class="login-form-group">
+                        <label for="password">Password</label>
+                        <div class="password-field">
+                            <input type="password" id="password" class="login-form-control" placeholder="Enter your password" required>
+                            <i class="fas fa-eye-slash password-toggle" id="togglePassword"></i>
+                        </div>
+                        <div id="passwordError" class="login-error"></div>
+                    </div>
+
+                    <div class="login-remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+
+                    <button type="submit" class="login-btn" id="loginBtn">Login</button>
+
+
+                    <div class="firebaseui-container" id="firebaseui-auth-container"></div>
+                    <div class="firebaseui-error-container" id="firebaseui-error"></div>
+
+                    <div class="login-signup-link">
+                        Don't have an account? <a href="#" id="signUpLink">Sign up</a>
+                    </div>
+                </form>
+
+                <div id="loginProviders" style="margin-top: 20px;"></div>
+
+                <div class="login-forgot-password">
+                    <a href="#" id="forgotPassword">Forgot password?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyABwi4-Rzl7T1qGLyWAWIAFcUxEivSX_BE",
+            authDomain: "whizan-coding--agent.firebaseapp.com",
+            projectId: "whizan-coding--agent",
+            storageBucket: "whizan-coding--agent.appspot.com",
+            messagingSenderId: "798036544047",
+            appId: "1:798036544047:web:ff7f8d3c44f40087e8d4da",
+            measurementId: "G-8DJEL3Q4RH"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in, redirect to dashboard
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        // Initialize FirebaseUI
+        const ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+        // FirebaseUI config
+        const uiConfig = {
+            signInSuccessUrl: 'dashboard.html',
+            signInOptions: [
+                firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+                firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+                firebase.auth.GithubAuthProvider.PROVIDER_ID,
+            ],
+            tosUrl: 'index.html',
+            privacyPolicyUrl: 'index.html',
+            credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
+            callbacks: {
+                signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                    // Handle successful sign in
+                    const user = authResult.user;
+                    
+                    if (document.getElementById('rememberMe').checked) {
+                        localStorage.setItem('rememberMe', 'true');
+                        localStorage.setItem('email', user.email);
+                    } else {
+                        localStorage.removeItem('rememberMe');
+                        localStorage.removeItem('email');
+                    }
+                    
+                    return true;
+                },
+                signInFailure: function(error) {
+                    // Handle error
+                    displayError(error.message);
+                    return Promise.resolve();
+                }
+            }
+        };
+
+        // Start FirebaseUI
+        ui.start('#firebaseui-auth-container', uiConfig);
+
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const rememberMe = document.getElementById('rememberMe');
+        const loginBtn = document.getElementById('loginBtn');
+        const forgotPasswordLink = document.getElementById('forgotPassword');
+        const signUpLink = document.getElementById('signUpLink');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const firebaseuiError = document.getElementById('firebaseui-error');
+
+        // Check if remember me was checked previously
+        if (localStorage.getItem('rememberMe') === 'true') {
+            rememberMe.checked = true;
+            emailInput.value = localStorage.getItem('email') || '';
+        }
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Reset errors
+            emailError.style.display = 'none';
+            passwordError.style.display = 'none';
+
+            // Validate email
+            if (!email) {
+                emailError.textContent = 'Email is required';
+                emailError.style.display = 'block';
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailError.textContent = 'Please enter a valid email';
+                emailError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate password
+            if (!password) {
+                passwordError.textContent = 'Password is required';
+                passwordError.style.display = 'block';
+                isValid = false;
+            } else if (password.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters';
+                passwordError.style.display = 'block';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Display error message
+        function displayError(message) {
+            firebaseuiError.textContent = message;
+            firebaseuiError.style.display = 'block';
+        }
+
+        // Hide error messages when user starts typing
+        emailInput.addEventListener('input', () => {
+            emailError.style.display = 'none';
+            firebaseuiError.style.display = 'none';
+        });
+
+        passwordInput.addEventListener('input', () => {
+            passwordError.style.display = 'none';
+            firebaseuiError.style.display = 'none';
+        });
+
+        // Handle form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) return;
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            loadingOverlay.style.display = 'flex';
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    if (rememberMe.checked) {
+                        localStorage.setItem('rememberMe', 'true');
+                        localStorage.setItem('email', email);
+                    } else {
+                        localStorage.removeItem('rememberMe');
+                        localStorage.removeItem('email');
+                    }
+                    
+                    window.location.href = 'dashboard.html';
+                })
+                .catch((error) => {
+                    loadingOverlay.style.display = 'none';
+                    
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            displayError('No user found with this email');
+                            break;
+                        case 'auth/wrong-password':
+                            displayError('Incorrect password');
+                            break;
+                        case 'auth/invalid-email':
+                            displayError('Please enter a valid email');
+                            break;
+                        case 'auth/user-disabled':
+                            displayError('This account has been disabled');
+                            break;
+                        case 'auth/too-many-requests':
+                            displayError('Too many failed attempts. Please try again later');
+                            break;
+                        default:
+                            displayError(error.message);
+                    }
+                });
+        });
+
+        // Forgot password functionality
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                alert('Please enter your email address to reset your password');
+                return;
+            }
+            
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            loadingOverlay.style.display = 'flex';
+            
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    loadingOverlay.style.display = 'none';
+                    alert('Password reset email sent. Please check your inbox.');
+                })
+                .catch((error) => {
+                    loadingOverlay.style.display = 'none';
+                    let errorMessage = 'Error sending password reset email.';
+                    
+                    if (error.code === 'auth/user-not-found') {
+                        errorMessage = 'No user found with this email address.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'Please enter a valid email address.';
+                    } else if (error.code === 'auth/too-many-requests') {
+                        errorMessage = 'Too many requests. Please try again later.';
+                    }
+                    
+                    alert(errorMessage);
+                });
+        });
+    </script>
+</body>
+</html>
