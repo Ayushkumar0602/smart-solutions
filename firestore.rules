@@ -1,0 +1,110 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if isAuthenticated() && isUserOwner(userId);
+      allow write: if isAuthenticated() && isUserOwner(userId) && 
+                    isUserDataValid(request.resource.data);
+      allow create, update: if request.time < resource.data.timestamp + duration.value(1, 'm');
+    }
+    
+    match /pomodoroSessions/{sessionId} {
+      allow read: if isAuthenticated() && isSessionOwner(userId);
+      allow create: if isAuthenticated() && isSessionOwner(userId) && 
+                     isValidSessionData(request.resource.data);
+      allow update: if isAuthenticated() && isSessionOwner(userId) && 
+                     isStatusUpdateOnly() &&
+                     isValidSessionUpdate(request.resource.data, resource.data.duration);
+      allow create, update: if request.time < resource.data.timestamp + duration.value(1, 'm');
+    }
+    
+    match /statistics/{userId} {
+      allow read: if isAuthenticated() && isUserOwner(userId);
+      allow write: if false;
+    }
+    
+    match /settings/{userId} {
+      allow read, write: if isAuthenticated() && isUserOwner(userId) && 
+                          isValidSettingsData(request.resource.data);
+    }
+    
+    match /sharedSessions/{sessionId} {
+      allow read: if isAuthenticated() && 
+                    (isSessionOwner(userId) || 
+                    request.resource.data.participants.hasAny([request.auth.uid]));
+      allow write: if isAuthenticated() && 
+                     (isSessionOwner(userId) || 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true) &&
+                     isValidSharedSessionData(request.resource.data);
+    }
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isUserOwner(userId) {
+      return userId == request.auth.uid;
+    }
+    
+    function isSessionOwner(userId) {
+      return request.resource.data.userId == request.auth.uid;
+    }
+    
+    function isStatusUpdateOnly() {
+      return request.resource.data.status != null && 
+             request.resource.data.status is string &&
+             request.writeFields.size() == 1 && 
+             request.writeFields.hasOnly(['status']);
+    }
+    
+    function isValidSessionData(data) {
+      return data.duration is number &&
+             data.duration > 0 &&
+             data.duration <= 120 &&
+             data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.timestamp is timestamp &&
+             data.status is string &&
+             data.status in ['active', 'completed', 'cancelled'];
+    }
+    
+    function isValidSessionUpdate(newData, oldDuration) {
+      return newData.duration == oldDuration &&
+             newData.userId is string &&
+             newData.userId == request.auth.uid &&
+             newData.timestamp is timestamp;
+    }
+    
+    function isUserDataValid(data) {
+      return data.email is string &&
+             data.email.matches('^[^@]+@[^@]+\\.[^@]+$') &&
+             data.displayName is string &&
+             data.photoURL is string &&
+             data.createdAt is timestamp &&
+             data.lastLogin is timestamp;
+    }
+    
+    function isValidSettingsData(data) {
+      return data.theme is string &&
+             data.theme in ['light', 'dark', 'system'] &&
+             data.notifications is bool &&
+             data.workDuration is number &&
+             data.workDuration >= 5 &&
+             data.workDuration <= 60 &&
+             data.breakDuration is number &&
+             data.breakDuration >= 1 &&
+             data.breakDuration <= 15;
+    }
+    
+    function isValidSharedSessionData(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.participants is list &&
+             data.participants.size() <= 10 &&
+             data.participants.hasOnly([string]) &&
+             data.sessionId is string &&
+             data.accessLevel is string &&
+             data.accessLevel in ['view', 'edit'];
+    }
+  }
+}
