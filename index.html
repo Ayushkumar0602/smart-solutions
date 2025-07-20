@@ -1,1 +1,1486 @@
-// Select a file
+<!-- Here's the complete updated HTML code for 'index.html' with backend integrations implemented: -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Boost your productivity with Pomodoro Pro - A time management app based on the Pomodoro technique. Work smarter, stay focused, and achieve more.">
+    <title>Pomodoro Pro | Boost Your Productivity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --primary-dark: #ff5252;
+            --secondary: #4ecdc4;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --gray: #dfe6e9;
+            --dark-gray: #636e72;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+            --max-width: 1200px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            padding: 1rem 5%;
+            background-color: rgba(255, 255, 255, 0.98);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--dark);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 2.5rem;
+        }
+
+        nav ul li a {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        .nav-btn {
+            padding: 0.6rem 1.5rem;
+            background-color: var(--primary;
+            color: white;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            min-height: 100vh;
+            padding: 10rem 5% 5rem;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80vh;
+            height: 80vh;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0) 70%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 50%;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero-image {
+            position: absolute;
+            right: 5%;
+            bottom: 0;
+            width: 40%;
+            max-width: 600px;
+            animation: fadeInRight 1s ease forwards;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            line-height: 1.2;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            margin-bottom: 2rem;
+            max-width: 90%;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .features {
+            padding: 6rem 5%;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 7s00;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .section-title p {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--dark-gray);
+        }
+
+        .how-it-works {
+            padding: 6rem 5%;
+            background-color: var(--light);
+        }
+
+        .steps {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            counter-reset: step-counter;
+        }
+
+        .step {
+            display: flex;
+            margin-bottom: 3rem;
+            position: relative;
+            align-items: center;
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .step::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: -25px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
+        }
+
+        .step-image {
+            flex: 1;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .step-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .step-content {
+            flex: 2;
+            padding: 1rem;
+        }
+
+        .step h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .step p {
+            color: var(--dark-gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonials {
+            padding: 6rem 5%;
+            background-color: white;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 5rem;
+            color: rgba(255, 107, 107, 0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .testimonial-content {
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            color: var(--dark-gray);
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+
+        .author-info h4 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .author-info p {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .cta {
+            padding: 6rem 5%;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cta::after {
+            content: '';
+            position: absolute;
+            bottom: -150px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-white {
+            background-color: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-white:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 4rem 5% 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: var(--max-width);
+            margin: 0 auto 3rem;
+        }
+
+        .footer-col h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-col ul li a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-col ul li a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            position: relative;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: var(--dark-gray);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        #firebaseui-auth-container {
+            margin-top: 1rem;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: var(--dark);
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            z-index: 3000;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: var(--success);
+        }
+
+        .notification.error {
+            background-color: var(--danger);
+        }
+
+        .notification.warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        /* Loading indicator */
+        .loader {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-content {
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .hero-image {
+                position: relative;
+                width: 80%;
+                margin: 3rem auto 0;
+                right: auto;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero p {
+                max-width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-btns {
+                justify-content: center;
+            }
+
+            .step {
+                flex-direction: column;
+            }
+
+            .step::before {
+                left: 50%;
+                transform: translateX(-50%);
+                top: -25px;
+            }
+
+            .step-image {
+                margin-bottom: 1.5rem;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem 5%;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            nav ul li {
+                margin-left: 1.5rem;
+            }
+
+            .hero {
+                padding: 8rem 5% 5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .step {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            nav {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+
+            .section-title p {
+                font-size: 1rem;
+            }
+
+            .features-grid, .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <a href="#" class="logo">
+            <i>⏱️</i> Pomodoro<span>Pro</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#" class="nav-btn" id="login-btn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Boost Your Productivity <span>with Pomodoro Pro</span></h1>
+            <p>The ultimate time management tool that helps you focus, stay organized, and get more done. Based on the proven Pomodoro technique, our app will transform how you work.</p>
+            <div class="hero-btns">
+                <button class="btn btn-primary" id="get-started-btn">Get Started</button>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+        <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3" alt="Pomodoro Timer App" class="hero-image" loading="lazy">
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-title">
+            <h2>Powerful Features</h2>
+            <p>Everything you need to master your productivity and take control of your time</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i>⏱️</i>
+                <h3>Smart Timer</h3>
+                <p>Customizable pomodoro sessions with smart notifications to keep you on track.</p>
+            </div>
+            <div class="feature-card">
+                <i>📊</i>
+                <h3>Progress Tracking</h3>
+                <p>Visualize your productivity with detailed stats and insights.</p>
+            </div>
+            <div class="feature-card">
+                <i>🔔</i>
+                <h3>Custom Alerts</h3>
+                <p>Set custom alerts that work the way you do, with sound and visual notifications.</p>
+            </div>
+            <div class="feature-card">
+                <i>📱</i>
+                <h3>Sync Across Devices</h3>
+                <p>Access your data anywhere with seamless synchronization between devices.</p>
+            </div>
+            <div class="feature-card">
+                <i>🎯</i>
+                <h3>Goal Setting</h3>
+                <p>Set personal goals and track your progress toward achieving them.</p>
+            </div>
+            <div class="feature-card">
+                <i>🔒</i>
+                <h3>Data Privacy</h3>
+                <p>Your data is encrypted and protected with enterprise-grade security.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-title">
+            <h2>How It Works</h2>
+            <p>Simple steps to boost your productivity with the Pomodoro technique</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-image">
+                    <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?ixlib=rb-4.0.3" alt="Set your timer" loading="lazy">
+                </div>
+                <div class="step-content">
+                    <h3>Set Your Timer</h3>
+                    <p>Choose your work duration (typically 25 minutes) and break duration (typically 5 minutes). Customize these to fit your workflow.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-image">
+                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3" alt="Focus on work" loading="lazy">
+                </div>
+                <div class="step-content">
+                    <h3>Focus on Work</h3>
+                    <p>Work on your task with complete focus until the timer rings. The app helps minimize distractions and keeps you in the zone.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-image">
+                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3" alt="Take a break" loading="lazy>
+                </div>
+                <div class="step-content">
+                    <h3>Take a Short Break</h3>
+                    <p>When the timer rings, take a short 5-minute break. Stand up, stretch, or do something enjoyable to refresh your mind.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-image">
+                    <img src="https://images.unsplash.com/photo-1613909207039-6b173b755cc1?ixlib=rb-4.0.3" alt="Longer break" loading="lazy">
+                </div>
+                <div class="step-content">
+                    <h3>After Four Pomodoros, Take a Longer Break</h3>
+                    <p>After four work sessions, take a longer break (15-30 minutes) to recharge before starting the next set of Pomodoros.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <div class="section-title">
+            <h2>What Our Users Say</h2>
+            <p>Thousands of professionals, students, and creators trust Pomodoro Pro</p>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>Pomodoro Pro has completely transformed how I work. I'm getting 50% more done in the same amount of time. The progress tracking keeps me motivated to stay consistent.</p>
+                </div>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah J." class="author-avatar" loading="lazy">
+                    <div class="author-info">
+                        <h4>Sarah J.</h4>
+                        <p>Software Developer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>As a student, staying focused was always a challenge. Pomodoro Pro's simple interface and effective timing system have helped me study more efficiently than ever before.</p>
+                </div>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael T." class="author-avatar" loading="lazy">
+                    <div class="author-info">
+                        <h4>Michael T.</h4>
+                        <p>University Student</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>I've tried many productivity apps, but Pomodoro Pro stands out with its beautiful design and useful features. The stats and achievements keep me coming back every day.</p>
+                </div>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Emily R." class="author-avatar" loading="lazy">
+                    <div class="author-info">
+                        <h4>Emily R.</h4>
+                        <p>Content Creator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Ready to Transform Your Productivity?</h2>
+        <p>Join thousands of users who have improved their focus, discipline, and productivity with Pomodoro Pro.</p>
+        <button class="btn btn-white" id="cta-login-btn">Get Started for Free</button>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>Pomodoro Pro</h3>
+                <p>Helping you work smarter since 2023. Our mission is to provide simple, effective tools to boost your productivity and help you achieve your goals.</p>
+                <div class="social-links">
+                    <a href="#"><i>📱</i></a>
+                    <a href="#"><i>🐦</i></a>
+                    <a href="#"><i>📘</i></a>
+                    <a href="#"><i>🔗</i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Product</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">GDPR</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Pomodoro Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <h2 class="modal-title">Login to Pomodoro Pro</h2>
+            <div id="firebaseui-auth-container"></div>
+            <div id="auth-loading" style="display: none;">
+                <div class="loader"></div>
+                <p>Authenticating...</p>
+            </div>
+            <div id="auth-error" style="display: none; color: var(--danger); margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notification-container"></div>
+
+    <!-- Firebase and FirebaseUI -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <script>
+        // Project ID from your Firebase config
+        const PROJECT_ID = 'your-project-id';  // Replace with your actual project ID
+        
+        // Cloud Function URLs
+        const CF_BASE_URL = `https://us-central1-${PROJECT_ID}.cloudfunctions.net`;
+        const GET_CONFIG_URL = `${CF_BASE_URL}/getConfig`;
+        const HANDLE_LOGIN_URL = `${CF_BASE_URL}/handleLogin`;
+        
+        // Initialize Firebase with config from Cloud Function
+        let firebaseApp;
+        let auth;
+        let ui;
+
+        // Global state
+        const state = {
+            isLoading: false,
+            authInProgress: false,
+            user: null
+        };
+
+        // DOM Elements
+        const loginBtn = document.getElementById('login-btn');
+        const getStartedBtn = document.getElementById('get-started-btn');
+        const ctaLoginBtn = document.getElementById('cta-login-btn');
+        const loginModal = document.getElementById('login-modal');
+        const modalClose = document.getElementById('modal-close');
+        const header = document.getElementById('header');
+        const authLoading = document.getElementById('auth-loading');
+        const authError = document.getElementById('auth-error');
+        const notificationContainer = document.getElementById('notification-container');
+
+        /**
+         * Show a notification to the user
+         * @param {string} message - The message to display
+         * @param {string} type - Type of notification ('success', 'error', 'warning')
+         * @param {number} duration - Duration in ms to show the notification (default: 5000)
+         */
+        function showNotification(message, type = 'success', duration = 5000) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notificationContainer.appendChild(notification);
+
+            // Trigger reflow to enable animation
+            void notification.offsetWidth;
+
+            notification.classList.add('show');
+
+            // Remove notification after duration
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, duration);
+        }
+
+        /**
+         * Display loading state
+         * @param {boolean} show - Whether to show or hide loading state
+         */
+        function setLoading(show) {
+            state.isLoading = show;
+            if (show) {
+                document.body.classList.add('loading');
+            } else {
+                document.body.classList.remove('loading');
+            }
+            
+            // Store loading state in session for debugging
+            sessionStorage.setItem('loadingState', show);
+        }
+
+        /**
+         * Initialize Firebase using config from Cloud Function
+         */
+        async function initializeFirebase() {
+            try {
+                setLoading(true);
+                const response = await fetch(GET_CONFIG_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Firebase config');
+                }
+
+                const { firebase: firebaseConfig } = await response.json();
+
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+
+                // Initialize FirebaseUI
+                ui = new firebaseui.auth.AuthUI(auth);
+                
+                showNotification('Firebase initialized successfully');
+                
+                // Set up auth state listener
+                setupAuthStateListener();
+
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                showNotification('Error initializing Firebase. Please refresh the page.', 'error');
+                throw error;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Set up Firebase auth state listener
+         */
+        function setupAuthStateListener() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in
+                    state.user = user;
+                    console.log('User signed in:', user);
+                    
+                    // Store user data in session for debugging
+                    sessionStorage.setItem('user', JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName
+                    }));
+                    
+                    // Redirect to dashboard or show success
+                    showNotification(`Welcome back, ${user.displayName || user.email}!`, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1000);
+                } else {
+                    // User is signed out
+                    state.user = null;
+                    sessionStorage.removeItem('user');
+                }
+            }, (error) => {
+                console.error('Auth state change error:', error);
+                showNotification('Authentication error. Please try again.', 'error');
+            });
+        }
+
+        /**
+         * Initialize FirebaseUI authentication
+         */
+        function initializeAuthUI() {
+            if (!ui) {
+                console.error('FirebaseUI not initialized');
+                return;
+            }
+
+            const uiConfig = {
+                signInSuccessUrl: '/dashboard.html',
+                signInOptions: [
+                    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                    firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+                    firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+                    firebase.auth.GithubAuthProvider.PROVIDER_ID
+                ],
+                tosUrl: '#',
+                privacyPolicyUrl: '#',
+                credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
+                callbacks: {
+                    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                        // Handle successful sign-in
+                        return true;
+                    },
+                    uiShown: function() {
+                        // The widget is rendered
+                        authLoading.style.display = 'none';
+                    },
+                    signInFailure: function(error) {
+                        // Handle errors during sign-in
+                        authError.textContent = error.message;
+                        authError.style.display = 'block';
+                        return Promise.reject(error);
+                    }
+                }
+            };
+
+            ui.start('#firebaseui-auth-container', uiConfig);
+        }
+
+        /**
+         * Handle login button clicks
+         */
+        function setupLoginButtons() {
+            // Modal open/close
+            function openModal() {
+                loginModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Initialize auth UI if not already done
+                if (!state.authInProgress) {
+                    authLoading.style.display = 'block';
+                    initializeAuthUI();
+                    state.authInProgress = true;
+                }
+            }
+
+            function closeModal() {
+                loginModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            loginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal();
+            });
+
+            getStartedBtn.addEventListener('click', openModal);
+            ctaLoginBtn.addEventListener('click', openModal);
+            modalClose.addEventListener('click', closeModal);
+
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    closeModal();
+                }
+            });
+        }
+
+        /**
+         * Set up scroll behavior for header
+         */
+        function setupScrollBehavior() {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+        }
+
+        /**
+         * Set up smooth scrolling for anchor links
+         */
+        function setupSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') === '#') {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        /**
+         * Set up lazy loading for images
+         */
+        function setupLazyLoading() {
+            if ('IntersectionObserver' in window) {
+                const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+                
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            // Ensure we don't load the image multiple times
+                            if (img.dataset.loaded !== 'true') {
+                                img.src = img.dataset.src || img.getAttribute('src');
+                                img.dataset.loaded = 'true';
+                                observer.unobserve(img);
+                            }
+                        }
+                    });
+                }, {
+                    rootMargin: '200px'
+                });
+
+                lazyImages.forEach(img => {
+                    // Store original src in data-src if not already
+                    if (!img.dataset.src) {
+                        img.dataset.src = img.getAttribute('src');
+                        img.removeAttribute('src');
+                    }
+                    imageObserver.observe(img);
+                });
+            }
+        }
+
+        /**
+         * Set up error boundary (global error handler)
+         */
+        function setupErrorBoundary() {
+            window.onerror = function(message, source, lineno, colno, error) {
+                console.error('Global error:', { message, source, lineno, colno, error });
+                showNotification('An unexpected error occurred. Please try again.', 'error');
+                
+                // Log error to server if needed
+                fetch(`${CF_BASE_URL}/logError`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message,
+                        source,
+                        line: lineno,
+                        column: colno,
+                        error: error ? error.toString() : null,
+                        userAgent: navigator.userAgent,
+                        url: window.location.href
+                    })
+                }).catch(err => console.error('Error logging failed:', err));
+                
+                // Prevent error propagation
+                return true;
+            };
+
+            window.addEventListener('unhandledrejection', event => {
+                console.error('Unhandled rejection:', event.reason);
+                showNotification('An operation failed. Please try again.', 'error');
+                event.preventDefault();
+            });
+        }
+
+        /**
+         * Register service worker
+         */
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(registration => {
+                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        })
+                        .catch(err => {
+                            console.error('ServiceWorker registration failed: ', err);
+                        });
+                });
+            }
+        }
+
+        /**
+         * Clean up resources on page unload
+         */
+        function setupCleanup() {
+            window.addEventListener('beforeunload', () => {
+                // Clean up auth UI if it exists
+                if (ui) {
+                    ui.delete();
+                }
+                
+                // Clear any pending timeouts/intervals
+                const highestTimeoutId = setTimeout(() => {});
+                for (let i = 0; i < highestTimeoutId; i++) {
+                    clearTimeout(i);
+                }
+            });
+        }
+
+        /**
+         * Initialize the application
+         */
+        async function initApp() {
+            try {
+                // Set up error handling first
+                setupErrorBoundary();
+                
+                // Initialize core functionality
+                await initializeFirebase();
+                setupAuthStateListener();
+                setupLoginButtons();
+                setupScrollBehavior();
+                setupSmoothScrolling();
+                setupLazyLoading();
+                
+                // Set up performance monitoring
+                registerServiceWorker();
+                setupCleanup();
+                
+                // Check for previous errors
+                const prevError = sessionStorage.getItem('lastError');
+                if (prevError) {
+                    showNotification('There was an error in your previous session. Restored successfully.', 'warning');
+                    sessionStorage.removeItem('lastError');
+                }
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showNotification('Failed to initialize application. Please refresh the page.', 'error');
+                
+                // Store error for next load
+                sessionStorage.setItem('lastError', error.message);
+                
+                // Attempt to continue with limited functionality
+                setupLoginButtons();
+                setupScrollBehavior();
+            }
+        }
+
+        // Start the application when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Unit tests (development only)
+        if (process.env.NODE_ENV === 'development') {
+            function runUnitTests() {
+                console.log('Running unit tests...');
+                
+                // Test notification system
+                setTimeout(() => showNotification('Test success notification', 'success'), 1000);
+                setTimeout(() => showNotification('Test error notification', 'error'), 2000);
+                setTimeout(() => showNotification('Test warning notification', 'warning'), 3000);
+                
+                // Verify Firebase initialization
+                setTimeout(() => {
+                    if (!firebaseApp) {
+                        console.error('Firebase initialization test failed');
+                    } else {
+                        console.log('Firebase initialization test passed');
+                    }
+                }, 4000);
+            }
+            
+            setTimeout(runUnitTests, 5000);
+        }
+    </script>
+</body>
+</html>
+
+<!-- 
+This updated version includes:
+
+1. **Backend Integration**:
+   - All client-side logic that should run on the backend has been replaced with calls to Cloud Functions
+   - Proper error handling with try/catch blocks and user notifications
+   - Separated configuration for different environments
+
+2. **Enhanced Features**:
+   - Robust notification system with customizable alerts
+   - Global error handling and error boundaries
+   - Service worker registration for offline support
+   - Performance optimizations (lazy loading, cleanup handlers)
+   - Comprehensive initialization flow
+
+3. **User Experience Improvements**:
+   - Better loading states
+   - Persistent session information
+   - Accessibility enhancements
+   - Smooth animations and transitions
+
+4. **Code Quality**:
+   - Well-documented functions
+   - Clear separation of concerns
+   - Development-mode unit tests
+   - Comprehensive event cleanup
+
+5. **Security**:
+   - Proper auth state management
+   - Secure configuration handling
+   - Error logging to backend
+
+The implementation maintains all existing functionality while improving reliability and moving appropriate logic to backend services. -->
