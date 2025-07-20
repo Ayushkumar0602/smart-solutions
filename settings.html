@@ -1,92 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer - Settings</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
-    
+    <title>Settings | Productivity App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <style>
-        /* CSS Variables for Theme Management */
         :root {
-            /* Light Theme Variables */
-            --primary-color: #6366f1;
-            --primary-hover: #5855eb;
-            --primary-dark: #4f46e5;
-            --secondary-color: #f3f4f6;
-            --background-color: #ffffff;
-            --surface-color: #f8fafc;
-            --card-background: #ffffff;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
-            --border-color: #e5e7eb;
-            --border-hover: #d1d5db;
-            --shadow-light: rgba(0, 0, 0, 0.05);
-            --shadow-medium: rgba(0, 0, 0, 0.1);
-            --shadow-heavy: rgba(0, 0, 0, 0.25);
+            --primary-color: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --border-color: #e2e8f0;
             --success-color: #10b981;
-            --success-background: #ecfdf5;
-            --success-border: #a7f3d0;
             --error-color: #ef4444;
-            --error-background: #fef2f2;
-            --error-border: #fecaca;
             --warning-color: #f59e0b;
-            --warning-background: #fffbeb;
-            --warning-border: #fed7aa;
-            --info-color: #3b82f6;
-            --info-background: #eff6ff;
-            --info-border: #bfdbfe;
-            --toggle-bg: #e5e7eb;
-            --toggle-checked: var(--primary-color);
-            --toggle-thumb: #ffffff;
-            --navbar-bg: var(--card-background);
-            --navbar-shadow: var(--shadow-medium);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+            --radius-sm: 0.25rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
         }
 
-        /* Dark Theme Variables */
         [data-theme="dark"] {
-            --primary-color: #818cf8;
-            --primary-hover: #a5b4fc;
-            --primary-dark: #6366f1;
-            --secondary-color: #374151;
-            --background-color: #111827;
-            --surface-color: #1f2937;
-            --card-background: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --text-tertiary: #9ca3af;
-            --border-color: #374151;
-            --border-hover: #4b5563;
-            --shadow-light: rgba(0, 0, 0, 0.3);
-            --shadow-medium: rgba(0, 0, 0, 0.4);
-            --shadow-heavy: rgba(0, 0, 0, 0.6);
-            --success-color: #34d399;
-            --success-background: #064e3b;
-            --success-border: #065f46;
-            --error-color: #f87171;
-            --error-background: #7f1d1d;
-            --error-border: #991b1b;
-            --warning-color: #fbbf24;
-            --warning-background: #78350f;
-            --warning-border: #92400e;
-            --info-color: #60a5fa;
-            --info-background: #1e3a8a;
-            --info-border: #1d4ed8;
-            --toggle-bg: #374151;
-            --toggle-checked: var(--primary-color);
-            --toggle-thumb: #ffffff;
-            --navbar-bg: var(--card-background);
-            --navbar-shadow: rgba(0, 0, 0, 0.5);
+            --primary-color: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --border-color: #334155;
         }
 
-        /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -94,340 +50,175 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, var(--background-color) 0%, var(--surface-color) 100%);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            transition: var(--transition);
+            line-height: 1.5;
             min-height: 100vh;
-            transition: var(--transition);
-            overflow-x: hidden;
-        }
-
-        /* Loading Spinner */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            flex-direction: column;
         }
 
-        .loading-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--border-color);
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Navigation Header */
-        .navbar {
-            background: var(--navbar-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 3px var(--shadow-light);
-            backdrop-filter: blur(10px);
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
             transition: var(--transition);
         }
 
-        .nav-container {
+        a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 700;
+        .logo {
             font-size: 1.5rem;
-            transition: var(--transition);
-        }
-
-        .nav-brand:hover {
+            font-weight: 700;
             color: var(--primary-color);
-            transform: translateY(-1px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .nav-brand .brand-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            border-radius: 8px;
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            background-color: var(--primary-color);
             color: white;
+            border-radius: var(--radius-sm);
             font-weight: bold;
-            box-shadow: 0 4px 12px var(--shadow-medium);
         }
 
-        .nav-actions {
+        .nav {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1rem;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 50px;
-            transition: var(--transition);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        .user-email {
+        .nav-link {
+            font-weight: 500;
             color: var(--text-secondary);
-            font-size: 0.875rem;
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
-        /* Main Container */
-        .container {
+        .nav-link:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .main {
+            flex: 1;
+            padding: 3rem 0;
+        }
+
+        .settings-container {
             max-width: 800px;
             margin: 0 auto;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            min-height: calc(100vh - 80px);
+            box-shadow: var(--shadow-md);
         }
 
-        /* Page Header */
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeInUp 0.6s ease-out;
+        .settings-header {
+            margin-bottom: 2rem;
         }
 
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .settings-title {
+            font-size: 1.75rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
-            line-height: 1.2;
+            color: var(--text-primary);
         }
 
-        .page-subtitle {
+        .settings-subtitle {
+            font-size: 1rem;
             color: var(--text-secondary);
-            font-size: 1.125rem;
-            max-width: 500px;
-            margin: 0 auto;
+            margin-bottom: 1.5rem;
         }
 
-        /* Settings Card */
-        .settings-card {
-            background: var(--card-background);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px var(--shadow-light);
-            transition: var(--transition);
-            animation: fadeInUp 0.6s ease-out 0.2s both;
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
 
-        .settings-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px var(--shadow-medium);
+        .back-link:hover {
+            color: var(--primary-color);
+            text-decoration: none;
         }
 
-        /* Settings Section */
+        .back-link svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
         .settings-section {
             margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .settings-section:last-child {
             margin-bottom: 0;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .section-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--primary-color);
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
         .section-title {
             font-size: 1.25rem;
             font-weight: 600;
+            margin-bottom: 1.5rem;
             color: var(--text-primary);
         }
 
-        .section-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-left: auto;
-            text-align: right;
-            max-width: 200px;
-        }
-
-        /* Setting Item */
-        .setting-item {
+        .theme-switcher {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            transition: var(--transition);
-        }
-
-        .setting-item:hover {
-            background: var(--card-background);
-            border-color: var(--border-hover);
-            transform: translateX(4px);
-        }
-
-        .setting-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .setting-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .setting-label {
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-
-        .setting-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.4;
-        }
-
-        /* Toggle Switch */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 52px;
-            height: 28px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--toggle-bg);
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-            border-radius: 28px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: var(--toggle-thumb);
-            transition: var(--transition);
-            border-radius: 50%;
-            box-shadow: 0 2px 4px var(--shadow-medium);
-        }
-
-        input:checked + .toggle-slider {
-            background-color: var(--toggle-checked);
-            border-color: var(--toggle-checked);
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(24px);
-        }
-
-        input:focus + .toggle-slider {
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        /* Theme Selector */
-        .theme-selector {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .theme-option {
             flex: 1;
-            min-width: 120px;
-            position: relative;
+            max-width: 200px;
         }
 
         .theme-radio {
-            opacity: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
+            display: none;
         }
 
         .theme-label {
@@ -435,430 +226,809 @@
             flex-direction: column;
             align-items: center;
             gap: 0.75rem;
-            padding: 1rem;
+            padding: 1.5rem;
             border: 2px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             cursor: pointer;
             transition: var(--transition);
-            background: var(--surface-color);
-        }
-
-        .theme-label:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
+            background-color: var(--bg-primary);
         }
 
         .theme-radio:checked + .theme-label {
             border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
 
-        .theme-preview {
-            width: 40px;
-            height: 40px;
+        .theme-icon {
+            width: 2.5rem;
+            height: 2.5rem;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .theme-preview.light {
-            background: linear-gradient(135deg, #ffffff, #f3f4f6);
-            border: 2px solid #e5e7eb;
-        }
-
-        .theme-preview.dark {
-            background: linear-gradient(135deg, #1f2937, #111827);
-            border: 2px solid #374151;
+            background-color: var(--bg-tertiary);
         }
 
         .theme-name {
             font-weight: 500;
-            font-size: 0.875rem;
-            text-align: center;
+            color: var(--text-primary);
         }
 
-        /* Action Buttons */
-        .action-buttons {
+        .toggle-group {
             display: flex;
+            flex-direction: column;
             gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-            flex-wrap: wrap;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background-color: var(--bg-primary);
+            border-radius victoryDecal: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toggle-label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .toggle-title {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .toggle-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
         }
 
         .btn {
-            padding: 0.75rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            min-width: 120px;
             justify-content: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            background-color: var(--primary-color);
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: var(--shadow-sm);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--surface-color);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--card-background);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateY(-1px);
+        .btn:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-md);
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            opacity: 0.7;
             cursor: not-allowed;
-            transform: none !important;
         }
 
-        /* Notification Messages */
-        .notification {
+        .btn-icon {
+            margin-right: 0.5rem;
+        }
+
+        .footer {
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: 2rem;
+            right: 2rem;
             padding: 1rem 1.5rem;
-            border-radius: 8px;
+            background-color: var(--success-color);
             color: white;
-            font-weight: 500;
-            z-index: 1000;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
             opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-            min-width: 300px;
-            box-shadow: 0 4px 20px var(--shadow-heavy);
+            transition: var(--transition);
+            z-index: 100;
         }
 
-        .notification.show {
+        .toast.show {
+            transform: translateY(0);
             opacity: 1;
-            transform: translateX(0);
         }
 
-        .notification.success {
-            background: linear-gradient(135deg, var(--success-color), #059669);
+        .toast-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .notification.error {
-            background: linear-gradient(135deg, var(--error-color), #dc2626);
+        .loading {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
 
-        .notification.warning {
-            background: linear-gradient(135deg, var(--warning-color), #d97706);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .notification.info {
-            background: linear-gradient(135deg, var(--info-color), #2563eb);
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .loader {
+            width: 3rem;
+            height: 3rem;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
         }
 
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        /* New additions */
+        .color-picker-group {
+            margin-top: 1.5rem;
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-10px);
-            }
-            60% {
-                transform: translateY(-5px);
-            }
+        .color-picker-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
-        /* Responsive Design */
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .color-option {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .color-option.selected {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            transform: scale(1.1);
+        }
+
+        .focus-mode-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .focus-mode-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .focus-mode-option:hover {
+            transform: translateY(-2px);
+        }
+
+        .focus-mode-option.selected {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .focus-mode-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+        }
+
+        .focus-mode-details {
+            flex: 1;
+        }
+
+        .focus-mode-title {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .focus-mode-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .slider-container {
+            margin-top: 1.5rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-value {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .display-language {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .display-language:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .reset-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .reset-btn {
+            background-color: var(--error-color);
+        }
+
+        .reset-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .account-details {
+            flex: 1;
+        }
+
+        .account-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .account-email {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #f5f3ff;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #7c3aed;
+            margin-top: 0.25rem;
+        }
+
+        [data-theme="dark"] .premium-badge {
+            background-color: #2e1065;
+            color: #a78bfa;
+        }
+
+        .export-btn {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            margin-right: 1rem;
+        }
+
+        .export-btn:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--primary-color);
+        }
+
+        .hotkey-settings {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+        }
+
+        .hotkey-settings th, .hotkey-settings td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .hotkey-settings th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            width: 40%;
+        }
+
+        .hotkey-settings td {
+            font-family: monospace;
+        }
+
+        .hotkey-input {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: monospace;
+        }
+
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .nav-container {
-                padding: 0 1rem;
-            }
-
-            .page-title {
-                font-size: 2rem;
-            }
-
-            .settings-card {
+            .settings-container {
                 padding: 1.5rem;
             }
 
-            .setting-item {
+            .theme-switcher {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+                align-items: center;
             }
 
-            .setting-item .toggle-switch {
-                align-self: flex-end;
-            }
-
-            .theme-selector {
-                flex-direction: column;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
+            .theme-option {
+                max-width: 100%;
                 width: 100%;
-            }
-
-            .user-email {
-                display: none;
-            }
-
-            .notification {
-                right: 10px;
-                left: 10px;
-                min-width: auto;
             }
         }
 
         @media (max-width: 480px) {
-            .nav-brand .brand-text {
-                display: none;
-            }
-
-            .page-title {
-                font-size: 1.75rem;
-            }
-
-            .settings-card {
+            .settings-container {
                 padding: 1rem;
             }
 
-            .section-description {
-                display: none;
-            }
-        }
-
-        /* Focus and Accessibility */
-        .btn:focus,
-        .toggle-switch input:focus + .toggle-slider,
-        .theme-radio:focus + .theme-label {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
-        /* Reduced Motion */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--surface-color);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-tertiary);
-        }
-
-        /* Print Styles */
-        @media print {
-            .navbar,
-            .action-buttons,
-            .notification {
-                display: none !important;
+            .header-container, .footer-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
             }
 
-            .settings-card {
-                box-shadow: none;
-                border: 1px solid #000;
+            .nav {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .account-info {
+                flex-direction: column;
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-    </div>
-
-    <!-- Navigation Header -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="dashboard.html" class="nav-brand">
-                <div class="brand-icon">P</div>
-                <span class="brand-text">Pomodoro Timer</span>
+    <header class="header">
+        <div class="container header-container">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-icon">P</span>
+                <span>Productivity App</span>
             </a>
-            
-            <div class="nav-actions">
-                <div class="user-info" id="userInfo">
-                    <div class="user-avatar" id="userAvatar"></div>
-                    <span class="user-email" id="userEmail"></span>
-                </div>
-            </div>
+            <nav class="nav">
+                <a href="dashboard.html", class="nav-link">Dashboard</a>
+                <a href="settings.html", class="nav-link">Settings</a>
+                <button id="logout-btn" class="btn">Logout</button>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Settings</h1>
-            <p class="page-subtitle">Customize your Pomodoro Timer experience with theme and notification preferences</p>
-        </div>
+    <main class="main">
+        <div class="container">
+            <a href="dashboard.html" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Dashboard
+            </a>
 
-        <!-- Settings Card -->
-        <div class="settings-card">
-            <!-- Theme Settings Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
-                    </svg>
-                    <h2 class="section-title">Theme Preferences</h2>
-                    <p class="section-description">Choose your preferred theme</p>
+            <div class="settings-container">
+                <div class="settings-header">
+                    <h1 class="settings-title">Settings</h1>
+                    <p class="settings-subtitle">Manage your app preferences and account settings</p>
                 </div>
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <label class="setting-label">App Theme</label>
-                        <p class="setting-description">Select between light and dark theme for your Pomodoro Timer interface</p>
+
+                <!-- Account Section -->
+                <div class="settings-section">
+                    <h2 class="section-title">Account</h2>
+                    <div class="account-info">
+                        <div class="avatar" id="user-avatar">
+                            <!-- Initial will be inserted here -->
+                        </div>
+                        <div class="account-details">
+                            <div class="account-name" id="user-name">Loading...</div>
+                            <div class="account-email" id="user-email">Loading...</div>
+                            <div class="premium-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14.25-1.23c.15.36.15.76.01 1.13-.29.76-.99 1.11-1.73.91l-2.31-.63c-.27-.08-.56-.03-.78.14l-1.74 1.38c-.4.32-.98.26-1.29-.14l-1.88-2.5a6.011 6.011 0 01-1.19-2.89l-.03-.35c0-.41.34-.75.75-.75h7.19c.41 0 .75.32.75.74l.01.14.42 2.76z"/>
+                                </svg>
+                                PRO Member
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="theme-selector">
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button id="change-avatar" class="btn export-btn">Change Avatar</button>
+                        <button id="manage-subscription" class="btn export-btn">Manage Subscription</button>
+                    </div>
+                </div>
+
+                <!-- Appearance Section -->
+                <div class="settings-section">
+                    <h2 class="section-title">Appearance</h2>
+                    <div class="theme-switcher">
                         <div class="theme-option">
-                            <input type="radio" id="lightTheme" name="theme" value="light" class="theme-radio">
-                            <label for="lightTheme" class="theme-label">
-                                <div class="theme-preview light">☀️</div>
+                            <input type="radio" id="light-theme" name="theme" value="light" class="theme-radio">
+                            <label for="light-theme" class="theme-label">
+                                <div class="theme-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                </div>
                                 <span class="theme-name">Light</span>
                             </label>
                         </div>
-                        
                         <div class="theme-option">
-                            <input type="radio" id="darkTheme" name="theme" value="dark" class="theme-radio">
-                            <label for="darkTheme" class="theme-label">
-                                <div class="theme-preview dark">🌙</div>
+                            <input type="radio" id="dark-theme" name="theme" value="dark" class="theme-radio">
+                            <label for="dark-theme" class="theme-label">
+                                <div class="theme-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20", height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                    </svg>
+                                </div>
                                 <span class="theme-name">Dark</span>
                             </label>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Notification Settings Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5l-5-5h5V3h5v14z"></path>
-                    </svg>
-                    <h2 class="section-title">Notification Preferences</h2>
-                    <p class="section-description">Manage your alerts and notifications</p>
-                </div>
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <label for="pomodoroNotifications" class="setting-label">Pomodoro Complete Notifications</label>
-                        <p class="setting-description">Get notified when your Pomodoro session is complete and it's time for a break</p>
+                    <div class="color-picker-group">
+                        <label for="primary-color" class="color-picker-label">Accent Color</label>
+                        <div class="color-options">
+                            <div class="color-option selected" style="background-color: #4f46e5;" data-color="4f46e5"></div>
+                            <div class="color-option" style="background-color: #10b981;" data-color="10b981"></div>
+                            <div class="color-option" style="background-color: #3b82f6;" data-color="3b82f6"></div>
+                            <div class="color-option" style="background-color: #f59e0b;" data-color="f59e0b"></div>
+                            <div class="color-option" style="background-color: #ec4899;" data-color="ec4899"></div>
+                            <div class="color-option" style="background-color: #8b5cf6;" data-color="8b5cf6"></div>
+                        </div>
                     </div>
-                    
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="pomodoroNotifications">
-                        <span class="toggle-slider"></span>
-                    </label>
                 </div>
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <label for="breakNotifications" class="setting-label">Break Complete Notifications</label>
-                        <p class="setting-description">Get notified when your break is over and it's time to start the next Pomodoro session</p>
-                    </div>
-                    
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="breakNotifications">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-            </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button type="button" class="btn btn-primary" id="saveSettingsBtn">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                <!-- Notifications Section -->
+                <div class="settings-section">
+                    <h2 class="section-title">Notifications</h2>
+                    <div class="toggle-group">
+                        <div class="toggle-item">
+                            <div class="toggle-label">
+                                <span class="toggle-title">Pomodoro Completion</span>
+                                <span class="toggle-description">Get notified when a pomodoro session completes</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="pomodoro-notifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <div class="toggle-label">
+                                <span class="toggle-title">Break Completion</span>
+                                <span class="toggle-description">Get notified when a break session completes</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="break-notifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <div class="toggle-label">
+                                <span class="toggle-title">Daily Summary</span>
+                                <span class="toggle-description">Get a daily report of your productivity</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="daily-summary-notifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <div class="toggle-label">
+                                <span class="toggle-title">Milestones</span>
+                                <span class="toggle-description">Receive notifications when you reach milestones</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="milestone-notifications">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Focus Mode Section -->
+                <div class="settings-section">
+                    <h2 class="section-title">Focus Mode</h2>
+                    <div class="focus-mode-options">
+                        <div class="focus-mode-option selected">
+                            <div class="focus-mode-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </div>
+                            <div class="focus-mode-details">
+                                <div class="focus-mode-title">Default</div>
+                                <div class="focus-mode-description">Standard focus mode with basic restrictions</div>
+                            </div>
+                        </div>
+                        <div class="focus-mode-option">
+                            <div class="focus-mode-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <div class="focus-mode-details">
+                                <div class="focus-mode-title">Strict</div>
+                                <div class="focus-mode-description">Blocks all notifications and websites</div>
+                            </div>
+                        </div>
+                        <div class="focus-mode-option">
+                            <div class="focus-mode-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                            </div>
+                            <div class="focus-mode-details">
+                                <div class="focus-mode-title">Zen</div>
+                                <div class="focus-mode-description">Minimal distractions with calming elements</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Focus Mode Intensity</span>
+                            <span class="slider-value">50%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="range-slider" id="focus-intensity">
+                    </div>
+                </div>
+
+                <!-- Preferences Section -->
+                <div class="settings-section">
+                    <h2 class="section-title">Preferences</h2>
+                    <div class="toggle-item">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Auto Start Pomodoro</span>
+                            <span class="toggle-description">Automatically start next pomodoro session after a break</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="auto-start-pomodoro">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item" style="margin-top: 1rem;">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Tab Clutter Warning</span>
+                            <span class="toggle-description">Get notified when you have too many open tabs</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="tab-clutter-warning">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <label for="display-language" class="color-picker-label">Display Language</label>
+                        <select id="display-language" class="display-language">
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="fr">Français</option>
+                            <option value="de">Deutsch</option>
+                            <option value="ja">日本語</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Keyboard Shortcuts -->
+                <div class="settings-section">
+                    <h2 class="section-title">Keyboard Shortcuts</h2>
+                    <table class="hotkey-settings">
+                        <tr>
+                            <th>Start/Pause Timer</th>
+                            <td><input type="text" class="hotkey-input" value="Ctrl+Space" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Skip to Next Session</th>
+                            <td><input type="text" class="hotkey-input" value="Ctrl+Right" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Reset Current Session</th>
+                            <td><input type="text" class="hotkey-input" value="Ctrl+R" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Toggle Fullscreen</th>
+                            <td><input type="text" class="hotkey-input" value="F11" readonly></td>
+                        </tr>
+                    </table>
+                    <button id="customize-hotkeys" class="btn export-btn" style="margin-top: 1rem;">Customize Shortcuts</button>
+                </div>
+
+                <!-- Data Management -->
+                <div class="settings-section reset-section">
+                    <h2 class="section-title">Data Management</h2>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button id="export-data" class="btn export-btn">Export Data</button>
+                        <button id="import-data" class="btn export-btn">Import Data</button>
+                    </div>
+                    <button id="reset-settings" class="btn reset-btn">Reset to Default Settings</button>
+                </div>
+
+                <button id="save-settings" class="btn" style="margin-top: 2rem;">
+                    <svg id="save-icon" xmlns="http://www.w3.org/2000/svg" class="btn-icon" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round", stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    Save Settings
+                    <span id="save-text">Save Settings</span>
+                    <span id="save-loader" class="loading" style="display: none;"></span>
                 </button>
-                
-                <a href="dashboard.html" class="btn btn-secondary">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back to Dashboard
-                </a>
             </div>
         </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <p class="footer-text">© 2023 Productivity App. All rights reserved.</p>
+            <p class="footer-text">v1.1.0</p>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast">
+        <svg xmlns="http://www.w3.org/2000/svg" class="toast-icon" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="toast-message">Settings saved successfully!</span>
+    </div>
+
+    <div id="loader" class="loader-container" style="display: none;">
+        <div class="loader"></div>
     </div>
 
     <script>
-        // Firebase Configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyABwi4-Rzl7T1qGLyWAWIAFcUxEivSX_BE",
             authDomain: "whizan-coding--agent.firebaseapp.com",
             projectId: "whizan-coding--agent",
-            storageBucket: "whizan-coding--agent.firebasestorage.app",
+            storageBucket: "whizan-coding--agent.appspot.com",
             messagingSenderId: "798036544047",
             appId: "1:798036544047:web:ff7f8d3c44f40087e8d4da",
             measurementId: "G-8DJEL3Q4RH"
@@ -869,870 +1039,379 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Global Variables
+        // DOM elements
+        const logoutBtn = document.getElementById('logout-btn');
+        const saveSettingsBtn = document.getElementById('save-settings');
+        const saveText = document.getElementById('save-text');
+        const saveIcon = document.getElementById('save-icon');
+        const saveLoader = document.getElementById('save-loader');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        const loader = document.getElementById('loader');
+        const lightThemeRadio = document.getElementById('light-theme');
+        const darkThemeRadio = document.getElementById('dark-theme');
+        const pomodoroNotifications = document.getElementById('pomodoro-notifications');
+        const breakNotifications = document.getElementById('break-notifications');
+        const dailySummaryNotifications = document.getElementById('daily-summary-notifications');
+        const milestoneNotifications = document.getElementById('milestone-notifications');
+        const autoStartPomodoro = document.getElementById('auto-start-pomodoro');
+        const tabClutterWarning = document.getElementById('tab-clutter-warning');
+        const displayLanguage = document.getElementById('display-language');
+        const focusIntensity = document.getElementById('focus-intensity');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const focusModeOptions = document.querySelectorAll('.focus-mode-option');
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const changeAvatarBtn = document.getElementById('change-avatar');
+        const manageSubscriptionBtn = document.getElementById('manage-subscription');
+        const exportDataBtn = document.getElementById('export-data');
+        const importDataBtn = document.getElementById('import-data');
+        const resetSettingsBtn = document.getElementById('reset-settings');
+        const customizeHotkeysBtn = document.getElementById('customize-hotkeys');
+
+        // Current user data
         let currentUser = null;
         let userSettings = {
             theme: 'light',
+            primaryColor: '4f46e5',
+            focusMode: 'default',
+            focusIntensity: 50,
             notifications: {
-                pomodoroComplete: true,
-                breakComplete: true
+                pomodoro: true,
+                break: true,
+                dailySummary: true,
+                milestones: true
+            },
+            preferences: {
+                autoStartPomodoro: false,
+                tabClutterWarning: true,
+                language: 'en'
             }
         };
 
-        // DOM Elements
-        const elements = {
-            loadingOverlay: document.getElementById('loadingOverlay'),
-            userInfo: document.getElementById('userInfo'),
-            userAvatar: document.getElementById('userAvatar'),
-            userEmail: document.getElementById('userEmail'),
-            lightThemeRadio: document.getElementById('lightTheme'),
-            darkThemeRadio: document.getElementById('darkTheme'),
-            pomodoroNotifications: document.getElementById('pomodoroNotifications'),
-            breakNotifications: document.getElementById('breakNotifications'),
-            saveSettingsBtn: document.getElementById('saveSettingsBtn')
-        };
-
-        // Utility Functions
-        const utils = {
-            // Show loading overlay
-            showLoading() {
-                elements.loadingOverlay.classList.add('active');
-            },
-
-            // Hide loading overlay
-            hideLoading() {
-                elements.loadingOverlay.classList.remove('active');
-            },
-
-            // Show notification
-            showNotification(message, type = 'info', duration = 4000) {
-                const notification = document.createElement('div');
-                notification.className = `notification ${type}`;
-                notification.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        ${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}
-                        <span>${message}</span>
-                    </div>
-                `;
-                
-                document.body.appendChild(notification);
-                
-                // Trigger animation
-                setTimeout(() => notification.classList.add('show'), 100);
-                
-                // Auto remove
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            document.body.removeChild(notification);
-                        }
-                    }, 300);
-                }, duration);
-            },
-
-            // Validate email format
-            isValidEmail(email) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(email);
-            },
-
-            // Get user initials from email
-            getUserInitials(email) {
-                if (!email) return 'U';
-                const parts = email.split('@')[0].split('.');
-                if (parts.length >= 2) {
-                    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
-                }
-                return email.charAt(0).toUpperCase();
-            },
-
-            // Debounce function for performance
-            debounce(func, wait) {
-                let timeout;
-                return function executedFunction(...args) {
-                    const later = () => {
-                        clearTimeout(timeout);
-                        func(...args);
-                    };
-                    clearTimeout(timeout);
-                    timeout = setTimeout(later, wait);
-                };
-            },
-
-            // Validate settings data
-            validateSettings(settings) {
-                const errors = [];
-
-                // Validate theme
-                if (!settings.theme || !['light', 'dark'].includes(settings.theme)) {
-                    errors.push('Theme must be either "light" or "dark"');
-                }
-
-                // Validate notifications object
-                if (!settings.notifications || typeof settings.notifications !== 'object') {
-                    errors.push('Notifications must be an object');
-                } else {
-                    // Validate notification properties
-                    if (typeof settings.notifications.pomodoroComplete !== 'boolean') {
-                        errors.push('Pomodoro complete notification must be a boolean');
-                    }
-                    if (typeof settings.notifications.breakComplete !== 'boolean') {
-                        errors.push('Break complete notification must be a boolean');
-                    }
-                }
-
-                return {
-                    isValid: errors.length === 0,
-                    errors
-                };
-            },
-
-            // Apply theme to document
-            applyTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
-                
-                // Add animation class for smooth transition
-                document.body.style.transition = 'all 0.3s ease';
-                setTimeout(() => {
-                    document.body.style.transition = '';
-                }, 300);
-            },
-
-            // Format timestamp
-            formatTimestamp(timestamp) {
-                if (!timestamp) return 'Never';
-                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-                return date.toLocaleString();
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                updateUserInfo();
+                loadUserSettings();
+            } else {
+                window.location.href = 'login.html';
             }
-        };
-
-        // Theme Management
-        const themeManager = {
-            // Initialize theme
-            init() {
-                // Check for saved theme or default to light
-                const savedTheme = localStorage.getItem('theme') || 'light';
-                this.setTheme(savedTheme);
-                
-                // Listen for theme changes
-                elements.lightThemeRadio.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        this.setTheme('light');
-                        userSettings.theme = 'light';
-                    }
-                });
-
-                elements.darkThemeRadio.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        this.setTheme('dark');
-                        userSettings.theme = 'dark';
-                    }
-                });
-
-                // Listen for system theme changes
-                if (window.matchMedia) {
-                    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                    mediaQuery.addListener((e) => {
-                        if (!localStorage.getItem('theme')) {
-                            this.setTheme(e.matches ? 'dark' : 'light');
-                        }
-                    });
-                }
-            },
-
-            // Set theme
-            setTheme(theme) {
-                utils.applyTheme(theme);
-                
-                // Update radio buttons
-                if (theme === 'light') {
-                    elements.lightThemeRadio.checked = true;
-                } else {
-                    elements.darkThemeRadio.checked = true;
-                }
-            },
-
-            // Get current theme
-            getCurrentTheme() {
-                return document.documentElement.getAttribute('data-theme') || 'light';
-            }
-        };
-
-        // Authentication Management
-        const authManager = {
-            // Initialize authentication
-            init() {
-                utils.showLoading();
-                
-                // Listen for auth state changes
-                auth.onAuthStateChanged((user) => {
-                    if (user) {
-                        currentUser = user;
-                        this.handleAuthenticatedUser(user);
-                    } else {
-                        this.handleUnauthenticatedUser();
-                    }
-                });
-            },
-
-            // Handle authenticated user
-            async handleAuthenticatedUser(user) {
-                try {
-                    // Update user info in navbar
-                    this.updateUserInfo(user);
-                    
-                    // Load user settings
-                    await settingsManager.loadUserSettings(user.uid);
-                    
-                    utils.hideLoading();
-                } catch (error) {
-                    console.error('Error handling authenticated user:', error);
-                    utils.showNotification('Error loading user data', 'error');
-                    utils.hideLoading();
-                }
-            },
-
-            // Handle unauthenticated user
-            handleUnauthenticatedUser() {
-                utils.hideLoading();
-                utils.showNotification('Please log in to access settings', 'warning');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
-            },
-
-            // Update user info in navbar
-            updateUserInfo(user) {
-                const email = user.email || 'user@example.com';
-                const initials = utils.getUserInitials(email);
-                
-                elements.userAvatar.textContent = initials;
-                elements.userEmail.textContent = email;
-                elements.userInfo.style.display = 'flex';
-            },
-
-            // Sign out user
-            async signOut() {
-                try {
-                    utils.showLoading();
-                    await auth.signOut();
-                    utils.hideLoading();
-                    window.location.href = 'login.html';
-                } catch (error) {
-                    console.error('Error signing out:', error);
-                    utils.showNotification('Error signing out', 'error');
-                    utils.hideLoading();
-                }
-            }
-        };
-
-        // Settings Management
-        const settingsManager = {
-            // Load user settings from Firestore
-            async loadUserSettings(userId) {
-                try {
-                    const userDoc = await db.collection('users').doc(userId).get();
-                    
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        
-                        // Merge with default settings
-                        userSettings = {
-                            theme: userData.theme || 'light',
-                            notifications: {
-                                pomodoroComplete: userData.notifications?.pomodoroComplete ?? true,
-                                breakComplete: userData.notifications?.breakComplete ?? true
-                            }
-                        };
-                    } else {
-                        // Create user document with default settings
-                        await this.createUserDocument(userId);
-                    }
-                    
-                    // Apply loaded settings
-                    this.applySettingsToUI();
-                    
-                } catch (error) {
-                    console.error('Error loading user settings:', error);
-                    utils.showNotification('Error loading settings', 'error');
-                    
-                    // Use default settings
-                    this.applySettingsToUI();
-                }
-            },
-
-            // Create user document with default settings
-            async createUserDocument(userId) {
-                try {
-                    const defaultUserData = {
-                        email: currentUser.email,
-                        displayName: currentUser.displayName || null,
-                        theme: 'light',
-                        notifications: {
-                            pomodoroComplete: true,
-                            breakComplete: true
-                        },
-                        settings: {
-                            pomodoroLength: 25,
-                            shortBreakLength: 5,
-                            longBreakLength: 15,
-                            sessionsUntilLongBreak: 4,
-                            autoStartBreaks: false,
-                            autoStartPomodoros: false,
-                            soundEnabled: true,
-                            tickingSound: false
-                        },
-                        stats: {
-                            totalPomodoros: 0,
-                            totalFocusTime: 0,
-                            totalBreakTime: 0,
-                            streak: 0,
-                            lastActivity: null
-                        },
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-
-                    await db.collection('users').doc(userId).set(defaultUserData);
-                    
-                    // Update local settings
-                    userSettings = {
-                        theme: defaultUserData.theme,
-                        notifications: defaultUserData.notifications
-                    };
-                    
-                } catch (error) {
-                    console.error('Error creating user document:', error);
-                    throw error;
-                }
-            },
-
-            // Apply settings to UI elements
-            applySettingsToUI() {
-                // Apply theme
-                themeManager.setTheme(userSettings.theme);
-                
-                // Apply notification settings
-                elements.pomodoroNotifications.checked = userSettings.notifications.pomodoroComplete;
-                elements.breakNotifications.checked = userSettings.notifications.breakComplete;
-            },
-
-            // Collect settings from UI
-            collectSettingsFromUI() {
-                return {
-                    theme: elements.lightThemeRadio.checked ? 'light' : 'dark',
-                    notifications: {
-                        pomodoroComplete: elements.pomodoroNotifications.checked,
-                        breakComplete: elements.breakNotifications.checked
-                    }
-                };
-            },
-
-            // Save settings to Firestore
-            async saveSettings() {
-                if (!currentUser) {
-                    utils.showNotification('Please log in to save settings', 'error');
-                    return false;
-                }
-
-                try {
-                    utils.showLoading();
-                    
-                    // Collect settings from UI
-                    const newSettings = this.collectSettingsFromUI();
-                    
-                    // Validate settings
-                    const validation = utils.validateSettings(newSettings);
-                    if (!validation.isValid) {
-                        utils.showNotification(`Invalid settings: ${validation.errors.join(', ')}`, 'error');
-                        utils.hideLoading();
-                        return false;
-                    }
-                    
-                    // Update user document in Firestore
-                    await db.collection('users').doc(currentUser.uid).update({
-                        theme: newSettings.theme,
-                        notifications: newSettings.notifications,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    // Update local settings
-                    userSettings = { ...newSettings };
-                    
-                    // Apply theme immediately
-                    themeManager.setTheme(newSettings.theme);
-                    
-                    utils.hideLoading();
-                    utils.showNotification('Settings saved successfully!', 'success');
-                    
-                    return true;
-                    
-                } catch (error) {
-                    console.error('Error saving settings:', error);
-                    utils.hideLoading();
-                    utils.showNotification('Error saving settings. Please try again.', 'error');
-                    return false;
-                }
-            },
-
-            // Setup real-time listener for settings changes
-            setupRealtimeListener() {
-                if (!currentUser) return;
-
-                const unsubscribe = db.collection('users').doc(currentUser.uid)
-                    .onSnapshot((doc) => {
-                        if (doc.exists) {
-                            const userData = doc.data();
-                            
-                            // Check if settings have changed
-                            const newSettings = {
-                                theme: userData.theme || 'light',
-                                notifications: {
-                                    pomodoroComplete: userData.notifications?.pomodoroComplete ?? true,
-                                    breakComplete: userData.notifications?.breakComplete ?? true
-                                }
-                            };
-                            
-                            // Only update if settings have actually changed
-                            if (JSON.stringify(newSettings) !== JSON.stringify(userSettings)) {
-                                userSettings = newSettings;
-                                this.applySettingsToUI();
-                                utils.showNotification('Settings updated from another device', 'info', 3000);
-                            }
-                        }
-                    }, (error) => {
-                        console.error('Error listening to settings changes:', error);
-                    });
-
-                // Store unsubscribe function for cleanup
-                window.settingsUnsubscribe = unsubscribe;
-            }
-        };
-
-        // Notification Management
-        const notificationManager = {
-            // Initialize notifications
-            init() {
-                this.checkPermission();
-                this.setupNotificationListeners();
-            },
-
-            // Check notification permission
-            async checkPermission() {
-                if (!('Notification' in window)) {
-                    console.log('This browser does not support notifications');
-                    return false;
-                }
-
-                if (Notification.permission === 'granted') {
-                    return true;
-                } else if (Notification.permission !== 'denied') {
-                    const permission = await Notification.requestPermission();
-                    return permission === 'granted';
-                }
-
-                return false;
-            },
-
-            // Setup notification listeners
-            setupNotificationListeners() {
-                elements.pomodoroNotifications.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        this.checkPermission();
-                    }
-                });
-
-                elements.breakNotifications.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        this.checkPermission();
-                    }
-                });
-            },
-
-            // Send test notification
-            async sendTestNotification(type) {
-                const hasPermission = await this.checkPermission();
-                if (!hasPermission) {
-                    utils.showNotification('Notification permission required', 'warning');
-                    return;
-                }
-
-                const messages = {
-                    pomodoro: {
-                        title: 'Pomodoro Complete! 🍅',
-                        body: 'Great work! Time for a well-deserved break.',
-                        icon: '/favicon.ico'
-                    },
-                    break: {
-                        title: 'Break Complete! ⏰',
-                        body: 'Break time is over. Ready for your next Pomodoro?',
-                        icon: '/favicon.ico'
-                    }
-                };
-
-                const config = messages[type];
-                if (config) {
-                    new Notification(config.title, {
-                        body: config.body,
-                        icon: config.icon,
-                        requireInteraction: false,
-                        silent: false
-                    });
-                }
-            }
-        };
-
-        // Event Listeners
-        const eventListeners = {
-            // Initialize all event listeners
-            init() {
-                this.setupSaveButton();
-                this.setupKeyboardShortcuts();
-                this.setupFormValidation();
-                this.setupThemeToggle();
-                this.setupNotificationToggles();
-            },
-
-            // Setup save button
-            setupSaveButton() {
-                elements.saveSettingsBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    
-                    // Disable button during save
-                    elements.saveSettingsBtn.disabled = true;
-                    elements.saveSettingsBtn.innerHTML = `
-                        <div class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
-                        Saving...
-                    `;
-                    
-                    const success = await settingsManager.saveSettings();
-                    
-                    // Re-enable button
-                    elements.saveSettingsBtn.disabled = false;
-                    elements.saveSettingsBtn.innerHTML = `
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Save Settings
-                    `;
-                });
-            },
-
-            // Setup keyboard shortcuts
-            setupKeyboardShortcuts() {
-                document.addEventListener('keydown', (e) => {
-                    // Ctrl/Cmd + S to save
-                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                        e.preventDefault();
-                        elements.saveSettingsBtn.click();
-                    }
-                    
-                    // Escape to go back
-                    if (e.key === 'Escape') {
-                        window.location.href = 'dashboard.html';
-                    }
-                    
-                    // Ctrl/Cmd + D to toggle theme
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-                        e.preventDefault();
-                        const currentTheme = themeManager.getCurrentTheme();
-                        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                        themeManager.setTheme(newTheme);
-                        userSettings.theme = newTheme;
-                    }
-                });
-            },
-
-            // Setup form validation
-            setupFormValidation() {
-                // Real-time validation feedback
-                const debouncedValidation = utils.debounce(() => {
-                    const settings = settingsManager.collectSettingsFromUI();
-                    const validation = utils.validateSettings(settings);
-                    
-                    elements.saveSettingsBtn.disabled = !validation.isValid;
-                    
-                    if (!validation.isValid) {
-                        elements.saveSettingsBtn.title = `Invalid settings: ${validation.errors.join(', ')}`;
-                    } else {
-                        elements.saveSettingsBtn.title = 'Save your settings';
-                    }
-                }, 300);
-
-                // Add validation listeners
-                [elements.lightThemeRadio, elements.darkThemeRadio, 
-                 elements.pomodoroNotifications, elements.breakNotifications].forEach(element => {
-                    element.addEventListener('change', debouncedValidation);
-                });
-            },
-
-            // Setup theme toggle
-            setupThemeToggle() {
-                // Add click animation to theme options
-                document.querySelectorAll('.theme-label').forEach(label => {
-                    label.addEventListener('click', () => {
-                        label.style.transform = 'scale(0.95)';
-                        setTimeout(() => {
-                            label.style.transform = '';
-                        }, 150);
-                    });
-                });
-            },
-
-            // Setup notification toggles
-            setupNotificationToggles() {
-                // Add test notification buttons (for development)
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    const testButtons = document.createElement('div');
-                    testButtons.innerHTML = `
-                        <div style="margin-top: 1rem; text-align: center; opacity: 0.7;">
-                            <small>Development Mode:</small>
-                            <button type="button" onclick="notificationManager.sendTestNotification('pomodoro')" 
-                                    style="margin: 0 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.75rem;">
-                                Test Pomodoro Notification
-                            </button>
-                            <button type="button" onclick="notificationManager.sendTestNotification('break')" 
-                                    style="margin: 0 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.75rem;">
-                                Test Break Notification
-                            </button>
-                        </div>
-                    `;
-                    document.querySelector('.settings-card').appendChild(testButtons);
-                }
-            }
-        };
-
-        // Performance Monitoring
-        const performanceMonitor = {
-            // Initialize performance monitoring
-            init() {
-                this.monitorPageLoad();
-                this.monitorUserInteractions();
-            },
-
-            // Monitor page load performance
-            monitorPageLoad() {
-                window.addEventListener('load', () => {
-                    if ('performance' in window && 'timing' in performance) {
-                        const timing = performance.timing;
-                        const loadTime = timing.loadEventEnd - timing.navigationStart;
-                        console.log(`Settings page loaded in ${loadTime}ms`);
-                        
-                        // Log to analytics if available
-                        if (window.gtag) {
-                            gtag('event', 'page_load_time', {
-                                event_category: 'Performance',
-                                value: loadTime,
-                                custom_map: { metric1: 'load_time' }
-                            });
-                        }
-                    }
-                });
-            },
-
-            // Monitor user interactions
-            monitorUserInteractions() {
-                let interactionCount = 0;
-                
-                document.addEventListener('click', () => {
-                    interactionCount++;
-                });
-                
-                document.addEventListener('change', () => {
-                    interactionCount++;
-                });
-                
-                // Log interaction count on page unload
-                window.addEventListener('beforeunload', () => {
-                    console.log(`User interactions: ${interactionCount}`);
-                });
-            }
-        };
-
-        // Error Handling
-        const errorHandler = {
-            // Initialize error handling
-            init() {
-                this.setupGlobalErrorHandlers();
-                this.setupUnhandledPromiseRejection();
-            },
-
-            // Setup global error handlers
-            setupGlobalErrorHandlers() {
-                window.addEventListener('error', (event) => {
-                    console.error('Global error:', event.error);
-                    this.logError('JavaScript Error', event.error);
-                    
-                    // Show user-friendly message
-                    if (!event.error.message.includes('Firebase')) {
-                        utils.showNotification('An unexpected error occurred', 'error');
-                    }
-                });
-            },
-
-            // Setup unhandled promise rejection handler
-            setupUnhandledPromiseRejection() {
-                window.addEventListener('unhandledrejection', (event) => {
-                    console.error('Unhandled promise rejection:', event.reason);
-                    this.logError('Promise Rejection', event.reason);
-                    
-                    // Prevent the default handler
-                    event.preventDefault();
-                    
-                    // Show user-friendly message
-                    utils.showNotification('An error occurred while processing your request', 'error');
-                });
-            },
-
-            // Log error to console and potentially to analytics
-            logError(type, error) {
-                const errorInfo = {
-                    type: type,
-                    message: error.message || error,
-                    stack: error.stack || 'No stack trace',
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent,
-                    url: window.location.href
-                };
-                
-                console.error('Error logged:', errorInfo);
-                
-                // Log to analytics if available
-                if (window.gtag) {
-                    gtag('event', 'exception', {
-                        description: `${type}: ${error.message || error}`,
-                        fatal: false
-                    });
-                }
-            }
-        };
-
-        // App Initialization
-        const app = {
-            // Initialize the entire application
-            async init() {
-                try {
-                    console.log('Initializing Pomodoro Timer Settings...');
-                    
-                    // Initialize components in order
-                    errorHandler.init();
-                    themeManager.init();
-                    notificationManager.init();
-                    eventListeners.init();
-                    performanceMonitor.init();
-                    
-                    // Initialize authentication (this will load settings)
-                    authManager.init();
-                    
-                    console.log('Settings page initialized successfully');
-                    
-                } catch (error) {
-                    console.error('Error initializing app:', error);
-                    utils.hideLoading();
-                    utils.showNotification('Error initializing application', 'error');
-                }
-            },
-
-            // Cleanup function for page unload
-            cleanup() {
-                // Unsubscribe from real-time listeners
-                if (window.settingsUnsubscribe) {
-                    window.settingsUnsubscribe();
-                }
-                
-                // Clear any remaining timeouts/intervals
-                // (Add specific cleanup code as needed)
-            }
-        };
-
-        // Page Lifecycle Management
-        document.addEventListener('DOMContentLoaded', () => {
-            app.init();
         });
 
-        window.addEventListener('beforeunload', () => {
-            app.cleanup();
-        });
-
-        // Make certain functions globally available for debugging
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            window.debugSettings = {
-                utils,
-                themeManager,
-                authManager,
-                settingsManager,
-                notificationManager,
-                userSettings,
-                currentUser
-            };
+        // Update user info in UI
+        function updateUserInfo() {
+            if (currentUser) {
+                // Set user avatar with initial
+                const initial = currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : currentUser.email.charAt(0).toUpperCase();
+                userAvatar.textContent = initial;
+                
+                // Set name and email
+                userName.textContent = currentUser.displayName || currentUser.email;
+                userEmail.textContent = currentUser.email;
+            }
         }
 
-        // Service Worker Registration (for PWA functionality)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('/sw.js');
-                    console.log('ServiceWorker registered:', registration);
-                } catch (error) {
-                    console.log('ServiceWorker registration failed:', error);
+        // Logout handler
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                showToast('Error logging out. Please try again.', 'error');
+            });
+        });
+
+        // Load user settings from Firestore
+        function loadUserSettings() {
+            loader.style.display = 'flex';
+            const userRef = db.collection('users').doc(currentUser.uid);
+            
+            userRef.onSnapshot((doc) => {
+                loader.style.display = 'none';
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.settings) {
+                        userSettings = data.settings;
+                        updateUI();
+                    }
+                } else {
+                    // Create user document if it doesn't exist
+                    userRef.set({
+                        settings: userSettings,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
                 }
+            }, (error) => {
+                loader.style.display = 'none';
+                showToast('Error loading settings. Please try again.', 'error');
+                console.error('Error loading settings:', error);
             });
         }
 
-        // Accessibility Enhancements
-        document.addEventListener('keydown', (e) => {
-            // Enhanced keyboard navigation
-            if (e.key === 'Tab') {
-                document.body.classList.add('keyboard-navigation');
+        // Update UI with current settings
+        function updateUI() {
+            // Set theme
+            document.documentElement.setAttribute('data-theme', userSettings.theme);
+            if (userSettings.theme === 'light') {
+                lightThemeRadio.checked = true;
+            } else {
+                darkThemeRadio.checked = true;
             }
-        });
 
-        document.addEventListener('mousedown', () => {
-            document.body.classList.remove('keyboard-navigation');
-        });
+            // Set primary color
+            updatePrimaryColor(userSettings.primaryColor);
 
-        // Add custom styles for keyboard navigation
-        const keyboardNavStyle = document.createElement('style');
-        keyboardNavStyle.textContent = `
-            .keyboard-navigation *:focus {
-                outline: 2px solid var(--primary-color) !important;
-                outline-offset: 2px !important;
-            }
-        `;
-        document.head.appendChild(keyboardNavStyle);
+            // Set notification toggles
+            pomodoroNotifications.checked = userSettings.notifications.pomodoro;
+            breakNotifications.checked = userSettings.notifications.break;
+            dailySummaryNotifications.checked = userSettings.notifications.dailySummary;
+            milestoneNotifications.checked = userSettings.notifications.milestones;
 
-        // Mobile responsiveness enhancements
-        const handleOrientationChange = () => {
-            // Adjust layout on orientation change
-            setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-            }, 100);
-        };
-
-        window.addEventListener('orientationchange', handleOrientationChange);
-
-        // Performance optimization for mobile
-        if ('connection' in navigator) {
-            const connection = navigator.connection;
-            if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
-                // Reduce animations for slow connections
-                document.body.classList.add('reduced-motion');
-                
-                const reducedMotionStyle = document.createElement('style');
-                reducedMotionStyle.textContent = `
-                    .reduced-motion *,
-                    .reduced-motion *::before,
-                    .reduced-motion *::after {
-                        animation-duration: 0.01ms !important;
-                        animation-iteration-count: 1 !important;
-                        transition-duration: 0.01ms !important;
-                    }
-                `;
-                document.head.appendChild(reducedMotionStyle);
-            }
+            // Set preferences
+            autoStartPomodoro.checked = userSettings.preferences.autoStart;
+            tabClutterWarning.checked = userSettings.preferences.tabClutterWarning;
+            displayLanguage.value = userSettings.preferences.language;
+            
+            // Set focus mode and intensity
+            focusModeOptions.forEach(option => {
+                option.classList.remove('selected');
+                if (option.querySelector('.focus-mode-title').textContent.toLowerCase() === userSettings.focusMode) {
+                    option.classList.add('selected');
+                }
+            });
+            
+            focusIntensity.value = userSettings.focusIntensity;
+            document.querySelector('.slider-value').textContent = `${userSettings.focusIntensity}%`;
         }
+
+        // Update primary color in UI
+        function updatePrimaryColor(color) {
+            // Update color options selection
+            colorOptions.forEach(option => {
+                option.classList.remove('selected');
+                if (option.dataset.color === color) {
+                    option.classList.add('selected');
+                }
+            });
+
+            // Set CSS variable (this would be done in a more comprehensive way in a real app)
+            document.documentElement.style.setProperty('--primary-color', `#${color}`);
+            document.documentElement.style.setProperty('--primary-dark', darkenColor(color, 20));
+            document.documentElement.style.setProperty('--primary-light', lightenColor(color, 20));
+        }
+
+        // Helper function to darken a color
+        function darkenColor(hex, percent) {
+            // Implementation would go here
+            return `#${hex}`;
+        }
+
+        // Helper function to lighten a color
+        function lightenColor(hex, percent) {
+            // Implementation would go here
+            return `#${hex}`;
+        }
+
+        // Theme change handlers
+        lightThemeRadio.addEventListener('change', () => {
+            if (lightThemeRadio.checked) {
+                userSettings.theme = 'light';
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        });
+
+        darkThemeRadio.addEventListener('change', () => {
+            if (darkThemeRadio.checked) {
+                userSettings.theme = 'dark';
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        });
+
+        // Color selection handler
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const color = option.dataset.color;
+                userSettings.primaryColor = color;
+                updatePrimaryColor(color);
+            });
+        });
+
+        // Focus mode selection handler
+        focusModeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                focusModeOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                userSettings.focusMode = option.querySelector('.focus-mode-title').textContent.toLowerCase();
+            });
+        });
+
+        // Focus intensity handler
+        focusIntensity.addEventListener('input', () => {
+            const value = focusIntensity.value;
+            document.querySelector('.slider-value').textContent = `${value}%`;
+            userSettings.focusIntensity = parseInt(value);
+        });
+
+        // Notification toggle handlers
+        pomodoroNotifications.addEventListener('change', () => {
+            userSettings.notifications.pomodoro = pomodoroNotifications.checked;
+        });
+
+        breakNotifications.addEventListener('change', () => {
+            userSettings.notifications.break = breakNotifications.checked;
+        });
+
+        dailySummaryNotifications.addEventListener('change', () => {
+            userSettings.notifications.dailySummary = dailySummaryNotifications.checked;
+        });
+
+        milestoneNotifications.addEventListener('change', () => {
+            userSettings.notifications.milestones = milestoneNotifications.checked;
+        });
+
+        // Preferences toggle handlers
+        autoStartPomodoro.addEventListener('change', () => {
+            userSettings.preferences.autoStart = autoStartPomodoro.checked;
+        });
+
+        tabClutterWarning.addEventListener('change', () => {
+            userSettings.preferences.tabClutterWarning = tabClutterWarning.checked;
+        });
+
+        // Language selection handler
+        displayLanguage.addEventListener('change', () => {
+            userSettings.preferences.language = displayLanguage.value;
+        });
+
+        // Save settings handler
+        saveSettingsBtn.addEventListener('click', () => {
+            saveSettings();
+        });
+
+        // Save settings to Firestore
+        function saveSettings() {
+            saveText.style.display = 'none';
+            saveIcon.style.display = 'none';
+            saveLoader.style.display = 'inline-block';
+            saveSettingsBtn.disabled = true;
+
+            const userRef = db.collection('users').doc(currentUser.uid);
+            
+            userRef.update({
+                'settings': userSettings,
+                'updatedAt': firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                saveText.style.display = 'inline';
+                saveIcon.style.display = 'inline';
+                saveLoader.style.display = 'none';
+                saveSettingsBtn.disabled = false;
+                showToast('Settings saved successfully!');
+            }).catch((error) => {
+                saveText.style.display = 'inline';
+                saveIcon.style.display = 'inline';
+                saveLoader.style.display = 'none';
+                saveSettingsBtn.disabled = false;
+                showToast('Error saving settings. Please try again.', 'error');
+                console.error('Error saving settings:', error);
+            });
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            // Set toast content
+            toastMessage.textContent = message;
+
+            // Set toast style based on type
+            if (type === 'error') {
+                toast.style.backgroundColor = 'var(--error-color)';
+                toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = 'var(--warning-color)';
+                toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />';
+            } else {
+                toast.style.backgroundColor = 'var(--success-color)';
+                toastIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />';
+            }
+
+            // Show toast
+            toast.classList.add('show');
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Account management handlers
+        changeAvatarBtn.addEventListener('click', () => {
+            showToast('Avatar change functionality coming soon!', 'warning');
+        });
+
+        manageSubscriptionBtn.addEventListener('click', () => {
+            showToast('Subscription management dashboard coming soon!', 'warning');
+        });
+
+        // Data management handlers
+        exportDataBtn.addEventListener('click', () => {
+            showToast('Data export functionality coming soon!', 'warning');
+        });
+
+        importDataBtn.addEventListener('click', () => {
+            showToast('Data import functionality coming soon!', 'warning');
+        });
+
+        resetSettingsBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all settings to default? This cannot be undone.')) {
+                loader.style.display = 'flex';
+                
+                // Reset to default settings
+                const defaults = {
+                    theme: 'light',
+                    primaryColor: '4f46e5',
+                    focusMode: 'default',
+                    focusIntensity: 50,
+                    notifications: {
+                        pomodoro: true,
+                        break: true,
+                        dailySummary: true,
+                        milestones: true
+                    },
+                    preferences: {
+                        autoStartPomodoro: false,
+                        tabClutterWarning: true,
+                        language: 'en'
+                    }
+                };
+                
+                const userRef = db.collection('users').doc(currentUser.uid);
+                userRef.update({
+                    'settings': defaults
+                }).then(() => {
+                    userSettings = defaults;
+                    updateUI();
+                    loader.style.display = 'none';
+                    showToast('Settings reset to default successfully!');
+                }).catch(error => {
+                    loader.style.display = 'none';
+                    showToast('Error resetting settings. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Keyboard shortcuts
+        customizeHotkeysBtn.addEventListener('click', () => {
+            showToast('Shortcut customization coming soon!', 'warning');
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'dashboard.html';
+            }
+        });
     </script>
 </body>
 </html>
