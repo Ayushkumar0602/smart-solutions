@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro History | Smart Pomodoro App</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --dark: #292f36;
+            --light: #f7fff7;
+            --accent: #ffd166;
+            --gray: #e0e0e0;
+            --dark-gray: #757575;
+            --success: #06d6a0;
+            --warning: #ff9e1b;
+            --error: #ef476f;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 200px;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            padding: 0.75rem;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+        }
+
+        .history-list {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr {
+            border-bottom: 1px solid var(--gray);
+            transition: var(--transition);
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: rgba(78, 205, 196, 0.1);
+        }
+
+        td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status.completed {
+            background-color: rgba(6, 214, 160, 0.2);
+            color: var(--success);
+        }
+
+        .status.in-progress {
+            background-color: rgba(255, 158, 27, 0.2);
+            color: var(--warning);
+        }
+
+        .status.canceled {
+            background-color: rgba(239, 71, 111, 0.2);
+            color: var(--error);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .empty-state h2 {
+            color: var(--dark-gray);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            color: var(--dark-gray);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: white;
+            border: 1px solid var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .filters {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .pagination {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Animation for list items */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        tr {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        tr:nth-child(1) { animation-delay: 0.1s; }
+        tr:nth-child(2) { animation-delay: 0.2s; }
+        tr:nth-child(3) { animation-delay: 0.3s; }
+        tr:nth-child(4) { animation-delay: 0.4s; }
+        tr:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pomodoro History</h1>
+            <a href="dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="date-filter">Date Range</label>
+                <select id="date-filter">
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            <div class="filter-group" id="custom-date-range" style="display: none;">
+                <label for="start-date">Start Date</label>
+                <input type="date" id="start-date">
+                <label for="end-date">End Date</label>
+                <input type="date" id="end-date">
+            </div>
+            <div class="filter-group">
+                <label for="status-filter">Status</label>
+                <select id="status-filter">
+                    <option value="all">All Statuses</option>
+                    <option value="completed">Completed</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="canceled">Canceled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sort-by">Sort By</label>
+                <select id="sort-by">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="duration-asc">Duration (Shortest First)</option>
+                    <option value="duration-desc">Duration (Longest First)</option>
+                </select>
+            </div>
+            <button id="apply-filters" class="btn">Apply Filters</button>
+            <button id="reset-filters" class="btn btn-outline">Reset</button>
+        </div>
+
+        <div class="history-list" id="history-list">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <div class="pagination" id="pagination">
+            <button class="pagination-btn" id="prev-page" disabled>←</button>
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn" id="next-page">→</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+       const firebaseConfig = {
+  apiKey: "AIzaSyABwi4-Rzl7T1qGLyWAWIAFcUxEivSX_BE",
+  authDomain: "whizan-coding--agent.firebaseapp.com",
+  projectId: "whizan-coding--agent",
+  storageBucket: "whizan-coding--agent.firebasestorage.app",
+  messagingSenderId: "798036544047",
+  appId: "1:798036544047:web:ff7f8d3c44f40087e8d4da",
+  measurementId: "G-8DJEL3Q4RH"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // DOM elements
+        const historyList = document.getElementById('history-list');
+        const pagination = document.getElementById('pagination');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+        const dateFilter = document.getElementById('date-filter');
+        const customDateRange = document.getElementById('custom-date-range');
+        const startDate = document.getElementById('start-date');
+        const endDate = document.getElementById('end-date');
+        const statusFilter = document.getElementById('status-filter');
+        const sortBy = document.getElementById('sort-by');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+
+        // State
+        let currentUser = null;
+        let pomodoros = [];
+        let filteredPomodoros = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let lastVisibleDoc = null;
+        let firstVisibleDoc = null;
+        let hasNextPage = false;
+
+        // Initialize the page
+        function init() {
+            checkAuthState();
+            setupEventListeners();
+        }
+
+        // Check authentication state
+        function checkAuthState() {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    loadPomodoros();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            dateFilter.addEventListener('change', handleDateFilterChange);
+            applyFiltersBtn.addEventListener('click', applyFilters);
+            resetFiltersBtn.addEventListener('click', resetFilters);
+            prevPageBtn.addEventListener('click', goToPrevPage);
+            nextPageBtn.addEventListener('click', goToNextPage);
+        }
+
+        // Handle date filter change
+        function handleDateFilterChange() {
+            if (dateFilter.value === 'custom') {
+                customDateRange.style.display = 'flex';
+                customDateRange.style.flexDirection = 'column';
+                customDateRange.style.gap = '0.5rem';
+            } else {
+                customDateRange.style.display = 'none';
+            }
+        }
+
+        // Load pomodoros from Firestore
+        async function loadPomodoros() {
+            historyList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            try {
+                let query = db.collection('pomodoros')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('startTime', 'desc')
+                    .limit(itemsPerPage);
+
+                const snapshot = await query.get();
+                
+                if (snapshot.empty) {
+                    showEmptyState();
+                    return;
+                }
+
+                pomodoros = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    startTime: doc.data().startTime.toDate()
+                }));
+
+                lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+                hasNextPage = snapshot.docs.length === itemsPerPage;
+
+                filteredPomodoros = [...pomodoros];
+                renderPomodoros();
+                renderPagination();
+            } catch (error) {
+                console.error('Error loading pomodoros:', error);
+                historyList.innerHTML = '<div class="empty-state"><p>Error loading your pomodoro history. Please try again.</p></div>';
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            currentPage = 1;
+            filterPomodoros();
+            renderPomodoros();
+            renderPagination();
+        }
+
+        // Reset filters
+        function resetFilters() {
+            dateFilter.value = 'all';
+            customDateRange.style.display = 'none';
+            statusFilter.value = 'all';
+            sortBy.value = 'newest';
+            currentPage = 1;
+            filteredPomodoros = [...pomodoros];
+            renderPomodoros();
+            renderPagination();
+        }
+
+        // Filter pomodoros based on selected filters
+        function filterPomodoros() {
+            filteredPomodoros = [...pomodoros];
+
+            // Filter by date
+            const dateFilterValue = dateFilter.value;
+            const now = new Date();
+            
+            if (dateFilterValue === 'today') {
+                const todayStart = new Date(now.setHours(0, 0, 0, 0));
+                filteredPomodoros = filteredPomodoros.filter(pomodoro => 
+                    pomodoro.startTime >= todayStart
+                );
+            } else if (dateFilterValue === 'week') {
+                const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+                weekStart.setHours(0, 0, 0, 0);
+                filteredPomodoros = filteredPomodoros.filter(pomodoro => 
+                    pomodoro.startTime >= weekStart
+                );
+            } else if (dateFilterValue === 'month') {
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                filteredPomodoros = filteredPomodoros.filter(pomodoro => 
+                    pomodoro.startTime >= monthStart
+                );
+            } else if (dateFilterValue === 'custom' && startDate.value && endDate.value) {
+                const start = new Date(startDate.value);
+                const end = new Date(endDate.value);
+                end.setHours(23, 59, 59, 999);
+                filteredPomodoros = filteredPomodoros.filter(pomodoro => 
+                    pomodoro.startTime >= start && pomodoro.startTime <= end
+                );
+            }
+
+            // Filter by status
+            const statusFilterValue = statusFilter.value;
+            if (statusFilterValue !== 'all') {
+                filteredPomodoros = filteredPomodoros.filter(pomodoro => 
+                    pomodoro.status === statusFilterValue
+                );
+            }
+
+            // Sort
+            const sortByValue = sortBy.value;
+            if (sortByValue === 'oldest') {
+                filteredPomodoros.sort((a, b) => a.startTime - b.startTime);
+            } else if (sortByValue === 'duration-asc') {
+                filteredPomodoros.sort((a, b) => a.duration - b.duration);
+            } else if (sortByValue === 'duration-desc') {
+                filteredPomodoros.sort((a, b) => b.duration - a.duration);
+            } else {
+                // Default: newest first
+                filteredPomodoros.sort((a, b) => b.startTime - a.startTime);
+            }
+        }
+
+        // Render pomodoros
+        function renderPomodoros() {
+            if (filteredPomodoros.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pomodorosToShow = filteredPomodoros.slice(startIndex, endIndex);
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Task Description</th>
+                            <th>Start Time</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            pomodorosToShow.forEach(pomodoro => {
+                const formattedDate = pomodoro.startTime.toLocaleString();
+                const duration = formatDuration(pomodoro.duration);
+                const statusClass = pomodoro.status.replace(' ', '-');
+                
+                html += `
+                    <tr>
+                        <td>${pomodoro.task || 'No description'}</td>
+                        <td>${formattedDate}</td>
+                        <td>${duration}</td>
+                        <td><span class="status ${statusClass}">${pomodoro.status}</span></td>
+                        <td><a href="pomodoro_details.html?id=${pomodoro.id}" class="btn btn-outline">View Details</a></td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            historyList.innerHTML = html;
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            historyList.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">📅</div>
+                    <h2>No Pomodoro Sessions Yet</h2>
+                    <p>You haven't completed any pomodoro sessions yet. Start using the app to track your productivity!</p>
+                    <a href="dashboard.html" class="btn">Go to Dashboard</a>
+                </div>
+            `;
+        }
+
+        // Format duration
+        function formatDuration(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+        }
+
+        // Render pagination
+        function renderPagination() {
+            if (filteredPomodoros.length <= itemsPerPage) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+            const totalPages = Math.ceil(filteredPomodoros.length / itemsPerPage);
+
+            // Clear existing page buttons (except prev/next)
+            while (pagination.children.length > 2) {
+                pagination.removeChild(pagination.lastChild);
+            }
+
+            // Insert page buttons before next button
+            const pageButtons = [];
+            const maxVisiblePages = 5;
+            let startPage, endPage;
+
+            if (totalPages <= maxVisiblePages) {
+                startPage = 1;
+                endPage = totalPages;
+            } else {
+                const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+                const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+                
+                if (currentPage <= maxPagesBeforeCurrent) {
+                    startPage = 1;
+                    endPage = maxVisiblePages;
+                } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+                    startPage = totalPages - maxVisiblePages + 1;
+                    endPage = totalPages;
+                } else {
+                    startPage = currentPage - maxPagesBeforeCurrent;
+                    endPage = currentPage + maxPagesAfterCurrent;
+                }
+            }
+
+            // Add page buttons
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => goToPage(i));
+                pagination.insertBefore(pageBtn, nextPageBtn);
+            }
+
+            // Update prev/next button states
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+        }
+
+        // Go to specific page
+        function goToPage(page) {
+            currentPage = page;
+            renderPomodoros();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Go to previous page
+        function goToPrevPage() {
+            if (currentPage > 1) {
+                goToPage(currentPage - 1);
+            }
+        }
+
+        // Go to next page
+        function goToNextPage() {
+            const totalPages = Math.ceil(filteredPomodoros.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                goToPage(currentPage + 1);
+            }
+        }
+
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
